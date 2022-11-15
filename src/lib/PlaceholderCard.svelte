@@ -1,11 +1,12 @@
 <script>
   export let loading;
 </script>
+
 <div id="card">
   {#if loading}
-    <span class="loader"></span>
+    <span class="loader" />
   {:else}
-    <img src="github-logo.png" alt="">
+    <img src="github-logo.png" alt="" />
   {/if}
 </div>
 
@@ -32,20 +33,20 @@
   .loader {
     width: 48px;
     height: 48px;
-    border: 5px solid #FFF;
+    border: 5px solid rgb(134, 134, 134);
     border-bottom-color: transparent;
     border-radius: 50%;
     display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
-    }
+  }
 
-    @keyframes rotation {
+  @keyframes rotation {
     0% {
-        transform: rotate(0deg);
+      transform: rotate(0deg);
     }
     100% {
-        transform: rotate(360deg);
+      transform: rotate(360deg);
     }
-    } 
+  }
 </style>

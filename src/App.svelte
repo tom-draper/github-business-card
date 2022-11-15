@@ -33,10 +33,6 @@
     });
   }
 
-  function validData() {
-    return data.repos != undefined;
-  }
-
   function sortedLanguages(languageCounts: Object): [string, number][] {
     let sortedLanguages = [];
 
@@ -106,7 +102,7 @@
     data.stats.lines = totalLinesEstimation(languageCounts);
   }
 
-  let loading = false;
+  let loading = true;
   let data = {
     user: undefined,
     repos: undefined,
