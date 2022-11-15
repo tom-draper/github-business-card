@@ -102,7 +102,7 @@
     data.stats.lines = totalLinesEstimation(languageCounts);
   }
 
-  let loading = true;
+  let loading = false;
   let data = {
     user: undefined,
     repos: undefined,
