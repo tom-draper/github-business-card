@@ -1,26 +1,34 @@
 <script lang="ts">
   import Card from "./lib/Card.svelte";
+  import PlaceholderCard from "./lib/PlaceholderCard.svelte";
 
   function collectUsername() {
-    let username = document.getElementById("username").value;
-    return username;
+    // @ts-ignore
+    return document.getElementById("username").value;
   }
 
-  async function fetchUserData(user: string) {
-    return fetch(`https://api.github.com/users/${user}`).then((response) => {
-      console.log(response);
+  function fetchUserData(user: string) {
+    console.log("Fetching user...");
+    fetch(`https://api.github.com/users/${user}`).then((response) => {
       if (response.status == 200) {
-        return response.json();
+        response.json().then((user) => {
+          console.log("Setting user...");
+          data.user = user;
+        });
       }
     });
   }
 
   async function fetchUserRepos(user: string, N: number) {
-    return fetch(
+    console.log("Fetching repos...");
+    await fetch(
       `https://api.github.com/users/${user}/repos?per_page=${N}`
-    ).then((response) => {
+    ).then(async (response) => {
       if (response.status == 200) {
-        return response.json();
+        await response.json().then((repos) => {
+          console.log("Setting repos...");
+          data.repos = repos;
+        });
       }
     });
   }
@@ -42,14 +50,14 @@
       return b[1] - a[1];
     });
 
-
     return sortedLanguages;
   }
 
-  async function fetchRepoLanguages(url, languageCounts) {
-    fetch(url).then((response) => {
+  async function fetchRepoLanguages(url: string, languageCounts: Object) {
+    await fetch(url).then(async (response) => {
       if (response.status == 200) {
-        response.json().then((languages) => {
+        await response.json().then((languages) => {
+          console.log(languages);
           for (let language in languages) {
             if (!(language in languageCounts)) {
               languageCounts[language] = 0;
@@ -61,17 +69,30 @@
     });
   }
 
+  function totalLinesEstimation(languageCounts: Object): number {
+    let totalBytes = 0;
+    for (let language in languageCounts) {
+      totalBytes += languageCounts[language];
+    }
+    let avgLineLength = 30; // Assume 40 characters per line used on average
+    let bytesPerChar = 4; // 4 bytes per character in utf-8
+    let lines = Math.round(totalBytes / (bytesPerChar * avgLineLength));
+    return lines;
+  }
+
   async function fetchRepoStats(user: string) {
     let languageCounts = {};
     for (let i = 0; i < data.repos.length; i++) {
+      console.log(`Fetching ${data.repos[i].name} repo stats...`);
       await fetch(
         `https://api.github.com/repos/${user}/${data.repos[i].name}`
-      ).then((response) => {
+      ).then(async (response) => {
         if (response.status == 200) {
-          response.json().then(async (repo) => {
+          await response.json().then(async (repo) => {
+            console.log(`Setting ${data.repos[i].name} repo stats...`);
             data.stats.stars += repo.stargazers_count;
             data.stats.forks += repo.forks;
-            fetchRepoLanguages(
+            await fetchRepoLanguages(
               data.repos[i].languages_url,
               languageCounts
             );
@@ -80,43 +101,64 @@
       });
     }
 
+    console.log("Finished", languageCounts, sortedLanguages(languageCounts));
     data.stats.languages = sortedLanguages(languageCounts);
+    data.stats.lines = totalLinesEstimation(languageCounts);
   }
 
+  let loading = false;
   let data = {
     user: undefined,
     repos: undefined,
     stats: {
       stars: 0,
       forks: 0,
+      lines: 0,
       languages: [],
     },
   };
   async function fetchUser(user: string) {
-    data.user = await fetchUserData(user);
-    data.repos = await fetchUserRepos(user, data.user.public_repos);
-    fetchRepoStats(user);
-    console.log(data)
+    loading = true;
+    fetchUserData(user);
+    await fetchUserRepos(user, 100);
+    await fetchRepoStats(user);
+    console.log(data);
+    loading = false;
   }
 </script>
 
 <main>
+  <div class="card-container">
+    {#if data.stats.languages.length != 0}
+      <Card {data} />
+    {:else}
+      <PlaceholderCard {loading}/>
+    {/if}
+  </div>
   <div class="account-entry">
-    GitHub username:
-    <input id="username" type="text" />
+    <input placeholder="GitHub username" id="username" type="text" />
     <button
       on:click={() => {
         fetchUser(collectUsername());
       }}>Submit</button
     >
   </div>
-
-  <div class="card-container">
-    {#if data.repos != undefined}
-      <Card {data} />
-    {/if}
-  </div>
 </main>
 
 <style>
+  input {
+    height: 35px;
+    width: 200px;
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    padding: 2px 20px;
+    margin-right: 4px;
+  }
+  button {
+    border-radius: 4px;
+  }
+  .account-entry {
+    margin-bottom: 100px;
+  }
 </style>

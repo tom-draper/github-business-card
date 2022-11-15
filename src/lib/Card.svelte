@@ -59,16 +59,20 @@
         </div>
       </div>
     </div>
+    <div class="details">
+      <div class="repo-count">
+        {data.user.public_repos} repos
+      </div>
+      <div class="lines">{data.stats.lines.toLocaleString('en-US')} lines</div>
+      <div class="since">{new Date(data.user.created_at).toLocaleDateString()}</div>
+      <div class="location">{data.user.location}</div>
+    </div>
   </div>
   <div class="languages">
-    {#each data.stats.languages as language, i}
+    {#each data.stats.languages as language, _}
       <div
         class="language {language[0]}"
-        style="flex: {language[1]}; {i == 0
-          ? 'border-radius: 0 0 0 4px;'
-          : ''} {i == data.stats.languages.length - 1
-          ? 'border-radius: 0 0 4px 0;'
-          : ''}"
+        style="flex: {language[1]};"
       />
     {/each}
   </div>
@@ -77,18 +81,17 @@
 <style>
   #card {
     width: 500px;
-    /* height: 200px; */
     aspect-ratio: 3.5/2;
     background: white;
     color: black;
-    /* padding: 35px 40px; */
     text-align: left;
     border-radius: 4px 4px 6px 6px;
-    margin: 100px 0;
+    margin: 0 0 100px;
     display: grid;
     position: relative;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    overflow:hidden;
   }
   .card-content {
     margin: 35px 40px;
@@ -131,7 +134,7 @@
     position: absolute;
     display: flex;
     width: 100%;
-    height: 15px;
+    height: 14px;
     bottom: 0;
   }
 
@@ -567,7 +570,7 @@
   .Puppet {
     background: #302b6d;
   }
-  .Pure Data {
+  .PureData {
     background: #91de79;
   }
   .PureBasic {
