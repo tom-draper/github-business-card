@@ -60,20 +60,28 @@
       </div>
     </div>
     <div class="details">
-      <div class="repo-count">
-        {data.user.public_repos} repos
+      <div class="location-date">
+        <div class="location">
+          <svg class="octicon octicon-location" viewBox="0 0 16 16" version="1.1" width="12" height="12" aria-hidden="true"><path fill-rule="evenodd" d="M11.536 3.464a5 5 0 010 7.072L8 14.07l-3.536-3.535a5 5 0 117.072-7.072v.001zm1.06 8.132a6.5 6.5 0 10-9.192 0l3.535 3.536a1.5 1.5 0 002.122 0l3.535-3.536zM8 9a2 2 0 100-4 2 2 0 000 4z"></path></svg>{data.user.location}
+        </div>
       </div>
-      <div class="lines">{data.stats.lines.toLocaleString('en-US')} lines</div>
-      <div class="since">{new Date(data.user.created_at).toLocaleDateString()}</div>
-      <div class="location">{data.user.location}</div>
+
+      <div class="repo-stats">
+        <div class="repo-count">
+          {data.user.public_repos} repos
+        </div>
+        <div class="lines">
+          {data.stats.lines.toLocaleString("en-US")} lines
+        </div>
+      </div>
+    </div>
+    <div class="since">
+      Since {new Date(data.user.created_at).toLocaleDateString('en-us', { year:"numeric", month:"long"})}
     </div>
   </div>
   <div class="languages">
     {#each data.stats.languages as language, _}
-      <div
-        class="language {language[0]}"
-        style="flex: {language[1]};"
-      />
+      <div class="language {language[0]}" style="flex: {language[1]};" />
     {/each}
   </div>
 </div>
@@ -91,10 +99,11 @@
     position: relative;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    overflow:hidden;
+    overflow: hidden;
   }
   .card-content {
-    margin: 35px 40px;
+    margin: 35px 20px 20px 40px;
+    position: relative;
   }
   .name-profile {
     display: flex;
@@ -136,6 +145,29 @@
     width: 100%;
     height: 14px;
     bottom: 0;
+  }
+
+  .details {
+    margin-top: 5px;
+    font-size: 0.9em;
+    width: 35%;
+  }
+
+  .location-date,
+  .repo-stats {
+    display: flex;
+  }
+
+  .since {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 0.8em;
+    opacity: 0.5;
+  }
+
+  .repo-count {
+    margin-right: 1ch;
   }
 
   .ABAP {
