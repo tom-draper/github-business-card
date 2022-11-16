@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import Card from "./lib/Card.svelte";
   import PlaceholderCard from "./lib/PlaceholderCard.svelte";
 
@@ -16,8 +15,10 @@
           // console.log("Setting user...");
           data.user = user;
         });
+      } else {
+        loading = false;
       }
-    });
+    })
   }
 
   async function fetchUserRepos(user: string, N: number) {
@@ -30,8 +31,10 @@
           // console.log("Setting repos...");
           data.repos = repos;
         });
+      } else {
+        loading = false;
       }
-    });
+    })
   }
 
   function sortedLanguages(languageCounts: Object): [string, number][] {
@@ -62,6 +65,8 @@
             languageCounts[language] += languages[language];
           }
         });
+      } else {
+        loading = false;
       }
     });
   }
@@ -95,6 +100,9 @@
               languageCounts
             );
           });
+        } else {
+          console.log("Error: Unable to fetch data.");
+          loading = false;
         }
       });
       promises.push(promise);
@@ -105,7 +113,6 @@
       data.stats.languages = sortedLanguages(languageCounts);
       data.stats.lines = totalLinesEstimation(languageCounts);
     })
-
   }
   
   function onKeyDown(event: KeyboardEvent) {
