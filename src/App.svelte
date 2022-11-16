@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import Card from "./lib/Card.svelte";
   import PlaceholderCard from "./lib/PlaceholderCard.svelte";
 
@@ -8,11 +9,11 @@
   }
 
   function fetchUserData(user: string) {
-    console.log("Fetching user...");
+    // console.log("Fetching user...");
     fetch(`https://api.github.com/users/${user}`).then((response) => {
       if (response.status == 200) {
         response.json().then((user) => {
-          console.log("Setting user...");
+          // console.log("Setting user...");
           data.user = user;
         });
       }
@@ -20,13 +21,13 @@
   }
 
   async function fetchUserRepos(user: string, N: number) {
-    console.log("Fetching repos...");
+    // console.log("Fetching repos...");
     await fetch(
       `https://api.github.com/users/${user}/repos?per_page=${N}`
     ).then(async (response) => {
       if (response.status == 200) {
         await response.json().then((repos) => {
-          console.log("Setting repos...");
+          // console.log("Setting repos...");
           data.repos = repos;
         });
       }
@@ -53,7 +54,7 @@
     await fetch(url).then(async (response) => {
       if (response.status == 200) {
         await response.json().then((languages) => {
-          console.log(languages);
+          // console.log(languages);
           for (let language in languages) {
             if (!(language in languageCounts)) {
               languageCounts[language] = 0;
@@ -78,14 +79,15 @@
 
   async function fetchRepoStats(user: string) {
     let languageCounts = {};
+    let promises = [];
     for (let i = 0; i < data.repos.length; i++) {
-      console.log(`Fetching ${data.repos[i].name} repo stats...`);
-      await fetch(
+      // console.log(`Fetching ${data.repos[i].name} repo stats...`);
+      let promise = fetch(
         `https://api.github.com/repos/${user}/${data.repos[i].name}`
       ).then(async (response) => {
         if (response.status == 200) {
           await response.json().then(async (repo) => {
-            console.log(`Setting ${data.repos[i].name} repo stats...`);
+            // console.log(`Setting ${data.repos[i].name} repo stats...`);
             data.stats.stars += repo.stargazers_count;
             data.stats.forks += repo.forks;
             await fetchRepoLanguages(
@@ -95,11 +97,22 @@
           });
         }
       });
+      promises.push(promise);
     }
 
-    console.log("Finished", languageCounts, sortedLanguages(languageCounts));
-    data.stats.languages = sortedLanguages(languageCounts);
-    data.stats.lines = totalLinesEstimation(languageCounts);
+    Promise.all(promises).then(() => {
+      // console.log("Finished", languageCounts, sortedLanguages(languageCounts));
+      data.stats.languages = sortedLanguages(languageCounts);
+      data.stats.lines = totalLinesEstimation(languageCounts);
+    })
+
+  }
+  
+  function onKeyDown(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      document.getElementById("button").click();
+    }
   }
 
   let loading = false;
@@ -116,12 +129,14 @@
   async function fetchUser(user: string) {
     loading = true;
     fetchUserData(user);
-    await fetchUserRepos(user, 100);
+    await fetchUserRepos(user, 500);
     await fetchRepoStats(user);
     console.log(data);
-    loading = false;
+    // loading = false;
   }
 </script>
+
+<svelte:window on:keydown={onKeyDown} />
 
 <main>
   <div class="card-container">
@@ -134,6 +149,7 @@
   <div class="account-entry">
     <input placeholder="GitHub username" id="username" type="text" />
     <button
+    id="button"
       on:click={() => {
         fetchUser(collectUsername());
       }}>Submit</button
