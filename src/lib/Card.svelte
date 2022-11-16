@@ -64,7 +64,7 @@
         <div class="location">
           <svg
             class="octicon octicon-location"
-            viewBox="0 0 12 12"
+            viewBox="0 0 16 16"
             version="1.1"
             width="12"
             height="12"
