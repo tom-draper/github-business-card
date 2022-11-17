@@ -18,7 +18,7 @@
       } else {
         loading = false;
       }
-    })
+    });
   }
 
   async function fetchUserRepos(user: string, N: number) {
@@ -34,7 +34,7 @@
       } else {
         loading = false;
       }
-    })
+    });
   }
 
   function sortedLanguages(languageCounts: Object): [string, number][] {
@@ -82,41 +82,61 @@
     return lines;
   }
 
-  async function fetchRepoStats(user: string) {
-    let languageCounts = {};
-    // let promises = [];
+  async function runBatch(batch: Promise<Response>[]) {
+    await Promise.all(batch);
+    batch.length = 0;
+  }
+
+  async function _fetchRepoStats(
+    languageCounts: Object,
+    user: string,
+    batchSize: number = 5
+  ) {
+    let batch = [];
     for (let i = 0; i < data.repos.length; i++) {
       // console.log(`Fetching ${data.repos[i].name} repo stats...`);
-      await fetch(
-        `https://api.github.com/repos/${user}/${data.repos[i].name}`
-      ).then(async (response) => {
-        if (response.status == 200) {
-          await response.json().then(async (repo) => {
-            // console.log(`Setting ${data.repos[i].name} repo stats...`);
-            data.stats.stars += repo.stargazers_count;
-            data.stats.forks += repo.forks;
-            await fetchRepoLanguages(
-              data.repos[i].languages_url,
-              languageCounts
-            );
-          });
-        } else {
-          console.log("Error: Unable to fetch data.");
-          loading = false;
-        }
-      });
-      // promises.push(promise);
+      batch.push(
+        fetch(
+          `https://api.github.com/repos/${user}/${data.repos[i].name}`
+        ).then(async (response) => {
+          if (response.status == 200) {
+            await response.json().then(async (repo) => {
+              // console.log(`Setting ${data.repos[i].name} repo stats...`);
+              data.stats.stars += repo.stargazers_count;
+              data.stats.forks += repo.forks;
+              await fetchRepoLanguages(
+                data.repos[i].languages_url,
+                languageCounts
+              );
+            });
+          } else {
+            console.log("Error: Unable to fetch data.");
+            loading = false;
+          }
+        })
+      );
+
+      // Send requests in batches to avoid exceeding the GitHub API free tier rate
+      // while still running as fast as possible
+      if (batch.length == batchSize) {
+        // Once collected a batch-worth of requests to perform at once, fetch data
+        await runBatch(batch);
+      }
     }
-    
+
+    if (batch.length > 0) {
+      await runBatch(batch);
+    }
+  }
+
+  async function fetchRepoStats(user: string) {
+    let languageCounts = {};
+    await _fetchRepoStats(languageCounts, user);
+
     data.stats.languages = sortedLanguages(languageCounts);
     data.stats.lines = totalLinesEstimation(languageCounts);
-    // Promise.all(promises).then(() => {
-    //   // console.log("Finished", languageCounts, sortedLanguages(languageCounts));
-    //   data.stats.languages = sortedLanguages(languageCounts);
-    //   data.stats.lines = totalLinesEstimation(languageCounts);
-    // })
   }
-  
+
   function onKeyDown(event: KeyboardEvent) {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -152,13 +172,13 @@
     {#if data.stats.languages.length != 0}
       <Card {data} />
     {:else}
-      <PlaceholderCard {loading}/>
+      <PlaceholderCard {loading} />
     {/if}
   </div>
   <div class="account-entry">
     <input placeholder="GitHub username" id="username" type="text" />
     <button
-    id="button"
+      id="button"
       on:click={() => {
         fetchUser(collectUsername());
       }}>Submit</button
