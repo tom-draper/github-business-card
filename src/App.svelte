@@ -84,10 +84,10 @@
 
   async function fetchRepoStats(user: string) {
     let languageCounts = {};
-    let promises = [];
+    // let promises = [];
     for (let i = 0; i < data.repos.length; i++) {
       // console.log(`Fetching ${data.repos[i].name} repo stats...`);
-      let promise = fetch(
+      await fetch(
         `https://api.github.com/repos/${user}/${data.repos[i].name}`
       ).then(async (response) => {
         if (response.status == 200) {
@@ -105,14 +105,16 @@
           loading = false;
         }
       });
-      promises.push(promise);
+      // promises.push(promise);
     }
-
-    Promise.all(promises).then(() => {
-      // console.log("Finished", languageCounts, sortedLanguages(languageCounts));
-      data.stats.languages = sortedLanguages(languageCounts);
-      data.stats.lines = totalLinesEstimation(languageCounts);
-    })
+    
+    data.stats.languages = sortedLanguages(languageCounts);
+    data.stats.lines = totalLinesEstimation(languageCounts);
+    // Promise.all(promises).then(() => {
+    //   // console.log("Finished", languageCounts, sortedLanguages(languageCounts));
+    //   data.stats.languages = sortedLanguages(languageCounts);
+    //   data.stats.lines = totalLinesEstimation(languageCounts);
+    // })
   }
   
   function onKeyDown(event: KeyboardEvent) {
