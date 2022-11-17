@@ -1,5 +1,5 @@
 <script>
-  export let loading;
+  export let loading, progress;
 </script>
 
 <div id="card">
@@ -8,6 +8,9 @@
   {:else}
     <img src="github-logo.png" alt="" />
   {/if}
+  <div class="loading-bar">
+    <div class="progress" style="width: {progress}%"></div>
+  </div>
 </div>
 
 <style>
@@ -24,10 +27,25 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     place-items: center;
+    overflow: hidden
   }
 
   img {
     width: 25%;
+  }
+
+  .loading-bar {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 14px;
+    bottom: 0;
+    left: 0;
+  }
+
+  .progress {
+    background: rgb(38, 161, 255);
+    width: 0;
   }
 
   .loader {
