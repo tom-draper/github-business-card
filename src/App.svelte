@@ -189,7 +189,7 @@
       }}>Submit</button
     >
   </div>
-  <div id="error" style="{error ? 'visibility: visible;' : 'visibility: hidden;'}">Error: GitHub API. Try again in an hour.</div>
+  <div id="error" style="{error ? 'visibility: visible;' : 'visibility: hidden;'}">Error: GitHub API rate limit exceeded for your IP address. Retry in an hour.</div>
 </main>
 
 <style>
@@ -207,5 +207,11 @@
   }
   .account-entry {
     margin-bottom: 80px;
+  }
+  #error {
+    max-width: 400px;
+    margin: auto;
+    opacity: 0.8;
+    color: #f13b3b;''
   }
 </style>
