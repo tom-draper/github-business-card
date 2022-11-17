@@ -66,7 +66,7 @@
       </div>
     </div>
     <div class="details">
-      <div class="location">
+      <div class="location" style="{data.user.location == null ? 'display: none;' : ''}">
         <svg
           class="octicon octicon-location"
           viewBox="0 0 16 16"
