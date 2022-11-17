@@ -104,9 +104,7 @@
       <div
         class="language {languageToTag(language[0])}"
         style="flex: {language[1]};"
-        title="{language[0]}"
-      >
-      </div>
+        title="{language[0]}"/>
     {/each}
   </div>
 </div>
