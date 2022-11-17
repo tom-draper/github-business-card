@@ -45,6 +45,7 @@
 
   .progress {
     background: rgb(38, 161, 255);
+    background: #2fbb4f;
     width: 0;
   }
 
