@@ -18,7 +18,6 @@
     .then(async (response) => {
       if (response.status == 200) {
         await response.json().then((user) => {
-          console.log(user)
           data.user = user;
         });
       } else {
