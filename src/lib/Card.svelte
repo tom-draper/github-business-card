@@ -1,4 +1,10 @@
 <script lang="ts">
+  function languageToTag(language: string) {
+    return language
+      .replace(" ", "-")
+      .replace("+", "Plus")
+      .replace("#", "Sharp");
+  }
   export let data: any;
 </script>
 
@@ -95,7 +101,12 @@
   </div>
   <div class="languages">
     {#each data.stats.languages as language, _}
-      <div class="language {language[0]}" style="flex: {language[1]};" />
+      <div
+        class="language {languageToTag(language[0])}"
+        style="flex: {language[1]};"
+      >
+        <div class="language-text">{language[1]}</div>
+      </div>
     {/each}
   </div>
 </div>
@@ -107,7 +118,7 @@
     background: white;
     color: black;
     text-align: left;
-    border-radius: 4px 4px 6px 6px;
+    border-radius: 4px;
     margin: 0 0 100px;
     display: grid;
     position: relative;
@@ -161,6 +172,20 @@
     bottom: 0;
   }
 
+  .language {
+    position: relative;
+  }
+
+  .language-text {
+    position: absolute;
+    visibility: hidden;
+    bottom: 0;
+
+  }
+  .language:hover ~ .language-text {
+    visibility: visible;
+  }
+
   .details {
     margin-top: 5px;
     font-size: 0.9em;
@@ -184,7 +209,7 @@
     margin-right: 1ch;
   }
 
-  .ABAP {
+  /* .ABAP {
     background: #e8274b;
   }
   .ActionScript {
@@ -777,5 +802,5 @@
   }
   .Zephir {
     background: #118f9e;
-  }
+  } */
 </style>
