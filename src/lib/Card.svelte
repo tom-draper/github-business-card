@@ -105,6 +105,7 @@
         title="{language[0]}"/>
     {/each}
   </div>
+
 </div>
 
 <style>
@@ -157,7 +158,7 @@
     margin-right: 10px;
   }
   svg {
-    margin: auto 3px auto auto;
+    margin: auto 4px auto auto;
   }
 
   .languages {
