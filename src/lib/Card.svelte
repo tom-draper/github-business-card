@@ -104,7 +104,9 @@
       <div
         class="language {languageToTag(language[0])}"
         style="flex: {language[1]};"
-      />
+      >
+        <div class="language-text">{language[1]}</div>
+      </div>
     {/each}
   </div>
 </div>
@@ -116,7 +118,7 @@
     background: white;
     color: black;
     text-align: left;
-    border-radius: 4px 4px 6px 6px;
+    border-radius: 4px;
     margin: 0 0 100px;
     display: grid;
     position: relative;
@@ -168,6 +170,20 @@
     width: 100%;
     height: 14px;
     bottom: 0;
+  }
+
+  .language {
+    position: relative;
+  }
+
+  .language-text {
+    position: absolute;
+    visibility: hidden;
+    bottom: 0;
+
+  }
+  .language:hover ~ .language-text {
+    visibility: visible;
   }
 
   .details {
