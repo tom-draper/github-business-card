@@ -1,7 +1,7 @@
 # GitHub Business Card
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/41476809/202496458-816aacd8-6255-424d-a2b1-2889789f0d23.png" />
+  <img src="https://user-images.githubusercontent.com/41476809/202516260-277928a2-58fa-4bae-9666-9f8a54e8c035.png" />
 </p>
 
 
