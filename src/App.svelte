@@ -212,6 +212,6 @@
     max-width: 400px;
     margin: auto;
     opacity: 0.8;
-    color: #f13b3b;''
+    color: #f13b3b;
   }
 </style>
