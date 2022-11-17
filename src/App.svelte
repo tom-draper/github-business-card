@@ -12,22 +12,13 @@
     error = true;
   }
 
-  function updateProgress(n: number) {
-    console.log(n);
-    if (data.repos == undefined) {
-      progress = 0;
-    } else {
-      progress = (n / data.repos.length-1) * 100;
-    }
-    console.log(progress)
-  }
-
-  function fetchUserData(user: string) {
+  async function fetchUserData(user: string) {
     // console.log("Fetching user...");
-    fetch(`https://api.github.com/users/${user}`).then((response) => {
+    await fetch(`https://api.github.com/users/${user}`)
+    .then(async (response) => {
       if (response.status == 200) {
-        response.json().then((user) => {
-          // console.log("Setting user...");
+        await response.json().then((user) => {
+          console.log(user)
           data.user = user;
         });
       } else {
@@ -72,7 +63,7 @@
     await fetch(url).then(async (response) => {
       if (response.status == 200) {
         await response.json().then((languages) => {
-          console.log(languages);
+          // console.log(languages);
           for (let language in languages) {
             if (!(language in languageCounts)) {
               languageCounts[language] = 0;
@@ -98,26 +89,27 @@
   }
 
   async function runBatch(batch: Promise<Response>[]) {
-
+    await Promise.all(batch);
+    progress += batch.length;
+    batch.length = 0;
   }
 
   async function _fetchRepoStats(
     languageCounts: Object,
     user: string,
-    batchSize: number = 10
+    batchSize: number = 15
   ) {
     let batch = [];
     for (let i = 0; i < data.repos.length; i++) {
       const j = i;
-      console.log(j, data.repos[j]);
-      console.log(`Fetching ${data.repos[j].name} repo stats...`);
+      // console.log(`Fetching ${data.repos[j].name} repo stats...`);
       batch.push(
         fetch(
           `https://api.github.com/repos/${user}/${data.repos[j].name}`
         ).then(async (response) => {
           if (response.status == 200) {
             await response.json().then(async (repo) => {
-              console.log(`Setting ${data.repos[j].name} repo stats...`);
+              // console.log(`Setting ${data.repos[j].name} repo stats...`);
               data.stats.stars += repo.stargazers_count;
               data.stats.forks += repo.forks;
               await fetchRepoLanguages(
@@ -134,18 +126,13 @@
       // Send requests in batches to avoid exceeding the GitHub API free tier rate
       // while still running as fast as possible
       if (batch.length == batchSize) {
-        console.log(batch)
         // Once collected a batch-worth of requests to perform at once, fetch data
-        await Promise.all(batch);
-        batch = [];
-        updateProgress(i);
+        await runBatch(batch)
       }
     }
 
     if (batch.length > 0) {
-      await Promise.all(batch);
-      batch = [];
-      updateProgress(data.repos.length-1);
+      await runBatch(batch)
     }
   }
 
@@ -167,6 +154,7 @@
   let error = false;
   let loading = false;
   let progress = 0;
+  let capacity = 0;
   let data = {
     user: undefined,
     repos: undefined,
@@ -179,8 +167,9 @@
   };
   async function fetchUser(user: string) {
     loading = true;
-    fetchUserData(user);
-    await fetchUserRepos(user, 500);
+    await fetchUserData(user);
+    capacity = 1 + data.user.public_repos;  // Fetch all repos and then each repo
+    await fetchUserRepos(user, data.user.public_repos);
     await fetchRepoStats(user);
     console.log(data);
     setTimeout(() => {loading = false}, 1000);  // Allow time to render card
@@ -194,7 +183,7 @@
     {#if data.stats.languages.length != 0}
       <Card {data} />
     {:else}
-      <PlaceholderCard {loading} {progress}/>
+      <PlaceholderCard {loading} progress={(progress/capacity) * 100}/>
     {/if}
   </div>
   <div class="account-entry">
