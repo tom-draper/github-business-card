@@ -1,6 +1,9 @@
 <script lang="ts">
   function languageToTag(language: string) {
-    return language.replace(' ', '-').replace('+', 'Plus').replace('#', 'Sharp')
+    return language
+      .replace(" ", "-")
+      .replace("+", "Plus")
+      .replace("#", "Sharp");
   }
   export let data: any;
 </script>
@@ -98,7 +101,10 @@
   </div>
   <div class="languages">
     {#each data.stats.languages as language, _}
-      <div class="language {languageToTag(language[0])}" style="flex: {language[1]};" />
+      <div
+        class="language {languageToTag(language[0])}"
+        style="flex: {language[1]};"
+      />
     {/each}
   </div>
 </div>
