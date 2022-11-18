@@ -1,6 +1,6 @@
 # GitHub Business Card
 
-A fun website to generate a digital GitHub business card incorporating account features and stats. It requests data through GitHub's free REST API, which limits an IP address to 600 requests per hour. If the generation fails, you may have exceeded this limit and could retry again in an hour.
+A website to package up a given GitHub account into a fun digital business card, displaying commit contributions, most used languages across all repositorites and total stars and forks. Only data from public repos are included. The data is provided by GitHub's free REST API, which limits an IP address to 600 requests per hour. If the generation fails, you may have exceeded this limit and could retry again in an hour.
 
 Inspired by <a href="https://crd.so/">scastiel's GitHub business card<a>.
 
