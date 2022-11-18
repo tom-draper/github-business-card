@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Contributions from "./Contributions.svelte";
+
   function languageToTag(language: string) {
     return language
       .replace(" ", "-")
@@ -18,11 +20,11 @@
         <div class="name">
           {data.user.name}
         </div>
-        <div class="github-url">
+        <a class="github-url" href="{data.user.url}">
           <span class="faint">github.com/</span><span style="font-weight: 600"
             >{data.user.login}</span
           >
-        </div>
+        </a>
         <div class="stats">
           <div class="stars">
             <svg
@@ -62,10 +64,21 @@
               {data.stats.forks}
             </div>
           </div>
+      <div class="repo-stats">
+        <div class="repo-count">
+          {data.user.public_repos} repos
+        </div>
+        <div class="lines">
+          {data.stats.lines.toLocaleString("en-US")} lines
+        </div>
+      </div>
         </div>
       </div>
     </div>
-    <div class="details">
+    <!-- <div class="details">
+
+    </div> -->
+    <Contributions contributions={data.stats.contributions} />
       <div class="location" style="{data.user.location == null ? 'display: none;' : ''}">
         <svg
           class="octicon octicon-location"
@@ -80,16 +93,6 @@
           /></svg
         >{data.user.location}
       </div>
-
-      <div class="repo-stats">
-        <div class="repo-count">
-          {data.user.public_repos} repos
-        </div>
-        <div class="lines">
-          {data.stats.lines.toLocaleString("en-US")} lines
-        </div>
-      </div>
-    </div>
     <div class="since">
       Since {new Date(data.user.created_at).toLocaleDateString("en-us", {
         year: "numeric",
@@ -110,12 +113,12 @@
 
 <style>
   #card {
-    width: 500px;
+    width: 5.5in;
     aspect-ratio: 3.5/2;
     background: white;
     color: black;
     text-align: left;
-    border-radius: 4px;
+    border-radius: 5px;
     margin: 0 0 100px;
     display: grid;
     position: relative;
@@ -124,17 +127,19 @@
     overflow: hidden;
   }
   .card-content {
-    margin: 35px 20px 20px 40px;
+    margin: 35px 20px 22px 40px;
     position: relative;
   }
   .name-profile {
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
   }
   .name {
     font-weight: 700;
     font-size: 32px;
     margin-bottom: 10px;
+    line-height: 1em;
   }
   .profile-image {
     width: 120px;
@@ -143,6 +148,9 @@
   }
   .github-url {
     font-size: 18px;
+    width: fit-content;
+    text-decoration: none;
+    color: black;
   }
   .faint {
     opacity: 0.5;
@@ -174,13 +182,25 @@
   }
 
   .details {
-    margin-top: 5px;
-    font-size: 0.9em;
-    width: 35%;
+    margin: 3px 0 12px;
+    /* text-align: right; */
+    /* font-size: 0.9em; */
+    font-size: 0.8em;
+    width: 200px;
   }
 
   .repo-stats {
     display: flex;
+    /* justify-content: right; */
+    margin-left: 10px;
+  }
+
+  .location {
+    position: absolute;
+    bottom: 2px;
+    left: -18px;
+    font-size: 0.8em;
+    opacity: 0.5;
   }
 
   .since {

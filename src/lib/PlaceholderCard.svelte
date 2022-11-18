@@ -15,7 +15,7 @@
 
 <style>
   #card {
-    width: 500px;
+    width: 5.5in;
     aspect-ratio: 3.5/2;
     background: #3b3b3b;
     color: black;
