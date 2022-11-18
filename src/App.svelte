@@ -14,16 +14,17 @@
 
   async function fetchUserData(user: string) {
     // console.log("Fetching user...");
-    await fetch(`https://api.github.com/users/${user}`)
-    .then(async (response) => {
-      if (response.status == 200) {
-        await response.json().then((user) => {
-          data.user = user;
-        });
-      } else {
-        fetchFailed();
+    await fetch(`https://api.github.com/users/${user}`).then(
+      async (response) => {
+        if (response.status == 200) {
+          await response.json().then((user) => {
+            data.user = user;
+          });
+        } else {
+          fetchFailed();
+        }
       }
-    });
+    );
   }
 
   async function fetchUserRepos(user: string, N: number) {
@@ -126,12 +127,12 @@
       // while still running as fast as possible
       if (batch.length == batchSize) {
         // Once collected a batch-worth of requests to perform at once, fetch data
-        await runBatch(batch)
+        await runBatch(batch);
       }
     }
 
     if (batch.length > 0) {
-      await runBatch(batch)
+      await runBatch(batch);
     }
   }
 
@@ -141,6 +142,22 @@
 
     data.stats.languages = sortedLanguages(languageCounts);
     data.stats.lines = totalLinesEstimation(languageCounts);
+  }
+
+  async function fetchContributions(user: string) {
+    await fetch(
+      `https://corsanywhere.herokuapp.com/https://github.com/${user}`
+    ).then(async (response) => {
+      if (response.status == 200) {
+        await response.text().then((html) => {
+          let re = /data-date="(.*?)" data-level="(.*?)"/g;
+          let match: RegExpExecArray | null = null;
+          while ((match = re.exec(html)) != null) {
+            data.stats.contributions.push(parseInt(match[2]));
+          }
+        });
+      }
+    });
   }
 
   function onKeyDown(event: KeyboardEvent) {
@@ -162,16 +179,20 @@
       forks: 0,
       lines: 0,
       languages: [],
+      contributions: [],
     },
   };
   async function fetchUser(user: string) {
     loading = true;
     await fetchUserData(user);
-    capacity = 1 + data.user.public_repos;  // Fetch all repos and then each repo
+    capacity = 1 + data.user.public_repos; // Fetch all repos and then each repo
     await fetchUserRepos(user, data.user.public_repos);
     await fetchRepoStats(user);
+    await fetchContributions(user);
     console.log(data);
-    setTimeout(() => {loading = false}, 1000);  // Allow time to render card
+    setTimeout(() => {
+      loading = false;
+    }, 1000); // Allow time to render card
   }
 </script>
 
@@ -179,10 +200,10 @@
 
 <main>
   <div class="card-container">
-    {#if data.stats.languages.length != 0}
+    {#if data.stats.contributions.length != 0}
       <Card {data} />
     {:else}
-      <PlaceholderCard {loading} progress={(progress/capacity) * 100}/>
+      <PlaceholderCard {loading} progress={(progress / capacity) * 100} />
     {/if}
   </div>
   <div class="account-entry">
@@ -194,7 +215,12 @@
       }}>Submit</button
     >
   </div>
-  <div id="error" style="{error ? 'visibility: visible;' : 'visibility: hidden;'}">Error: GitHub API rate limit exceeded for your IP address. Retry in an hour.</div>
+  <div
+    id="error"
+    style={error ? "visibility: visible;" : "visibility: hidden;"}
+  >
+    Error: GitHub API rate limit exceeded for your IP address. Retry in an hour.
+  </div>
 </main>
 
 <style>
@@ -214,7 +240,7 @@
     margin-bottom: 80px;
   }
   #error {
-    max-width: 400px;
+    max-width: 450px;
     margin: auto;
     color: #f13b3b;
   }
