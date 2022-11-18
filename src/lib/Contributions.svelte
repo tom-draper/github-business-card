@@ -21,7 +21,7 @@ export let contributions: number[];
     .square {
         width: 7px;
         height: 7px;
-        margin: 0.5px;
+        margin: 1px;
         border-radius: 1px;
     }
     .s-0 {

@@ -133,7 +133,7 @@
   .name-profile {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .name {
     font-weight: 700;
