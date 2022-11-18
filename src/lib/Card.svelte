@@ -20,7 +20,7 @@
         <div class="name">
           {data.user.name}
         </div>
-        <a class="github-url" href="{data.user.url}">
+        <a class="github-url" href="{data.user.html_url}">
           <span class="faint">github.com/</span><span style="font-weight: 600"
             >{data.user.login}</span
           >
