@@ -8,8 +8,8 @@
   }
 
   function fetchFailed() {
-    loading = false;
-    error = true;
+    loading = false;  // Stop spiner
+    error = true;  // Display error message
   }
 
   async function fetchUserData(user: string) {
@@ -170,6 +170,7 @@
   let error = false;
   let loading = false;
   let progress = 0;
+  // Progress bar capacity - number of requests to make (only known after first fetch)
   let capacity = 0;
   let data = {
     user: undefined,
@@ -185,7 +186,7 @@
   async function fetchUser(user: string) {
     loading = true;
     await fetchUserData(user);
-    capacity = 1 + data.user.public_repos; // Fetch all repos and then each repo
+    capacity = 2 + data.user.public_repos; // Fetch all repos + contributions + each repo
     await fetchUserRepos(user, data.user.public_repos);
     await fetchRepoStats(user);
     await fetchContributions(user);
