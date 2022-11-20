@@ -150,10 +150,12 @@
     ).then(async (response) => {
       if (response.status == 200) {
         await response.text().then((html) => {
-          let re = /data-date="(.*?)" data-level="(.*?)"/g;
+          let re = /data-count="(.*?)" data-date="(.*?)" data-level="(.*?)"/g;
           let match: RegExpExecArray | null = null;
           while ((match = re.exec(html)) != null) {
-            data.stats.contributions.push(parseInt(match[2]));
+            console.log(match);
+            data.stats.contributions.count += parseInt(match[1]);
+            data.stats.contributions.graph.push(parseInt(match[3]));
           }
         });
       }
@@ -180,7 +182,10 @@
       forks: 0,
       lines: 0,
       languages: [],
-      contributions: [],
+      contributions: {
+        count: 0,
+        graph: []
+      },
     },
   };
   async function fetchUser(user: string) {
@@ -201,7 +206,7 @@
 
 <main>
   <div class="card-container">
-    {#if data.stats.contributions.length != 0}
+    {#if data.stats.contributions.graph.length != 0}
       <Card {data} />
     {:else}
       <PlaceholderCard {loading} progress={(progress / capacity) * 100} />

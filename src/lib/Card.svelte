@@ -78,7 +78,10 @@
     <!-- <div class="details">
 
     </div> -->
-    <Contributions contributions={data.stats.contributions} />
+    <div class="contributions-count">
+      {data.stats.contributions.count.toLocaleString("en-US")} commits in last year
+    </div>
+    <Contributions contributions={data.stats.contributions.graph} />
       <div class="location" style="{data.user.location == null ? 'display: none;' : ''}">
         <svg
           class="octicon octicon-location"
@@ -133,7 +136,7 @@
   .name-profile {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   }
   .name {
     font-weight: 700;
@@ -191,7 +194,6 @@
 
   .repo-stats {
     display: flex;
-    /* justify-content: right; */
     margin-left: 10px;
   }
 
@@ -209,6 +211,15 @@
     right: 0;
     font-size: 0.8em;
     opacity: 0.5;
+  }
+
+  .contributions-count {
+    font-size: 0.68em;
+    text-align: right;
+    margin-right: 18%;
+    color: #40c463;
+    line-height: initial;
+    margin-bottom: 3px
   }
   
 
